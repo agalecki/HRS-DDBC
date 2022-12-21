@@ -1,7 +1,7 @@
-#  Macro funcd (29APR22)
+#  Macro funcd (21DEC22)
 
 * This file contains information about the execution of `funcd` macro
-* Macro `funcd` (Version 2022-04-22) was executed on 29APR22 at 13:05
+* Macro `funcd` (Version 2022-04-22) was executed on 21DEC22 at 18:08
 * Macro `funcd` can be executed in one of the two modes: _test_ or _regular_ mode
 * Execution mode of the `funcd` is determined based on the value of the `outinfo` argument
    - By default the `outinfo` argument is blank and the `funcd` macro is executed in a _regular_ mode
@@ -41,7 +41,7 @@ Derived variables listed in the Table below will be stored in `myout.adl_iadl2` 
 | ADL DD vars        | dress_DD bathe_DD eat_DD toilet_DD walk_DD bed_DD       |
 
 ## Loop Iterations 
-Main loop execution started at 13:05
+Main loop execution started at 18:08
 
 Loop will be executed for selected 14 study years:1993 ,1995 ,1996 ,1998 ,2000 ,2002 ,2004 ,2006 ,2008 ,2010 ,2012 ,2014 ,2016 ,2018 ,
 
@@ -409,5 +409,5 @@ Notes related to processing year 2018:
 ======= Year 2018 processing completed =======
 
 
----- Macro `funcd` ended  at 13:05 (Test mode = Yes)
+---- Macro `funcd` ended  at 18:08 (Test mode = Yes)
 

@@ -1,7 +1,7 @@
-#  Macro health (29APR22)
+#  Macro health (21DEC22)
 
 * This file contains information about the execution of `health` macro
-* Macro `health` (Version 2022-04-27) was executed on 29APR22 at 13:02
+* Macro `health` (Version 2022-04-27) was executed on 21DEC22 at 18:09
 * Macro `health` can be executed in one of the two modes: _test_ or _regular_ mode
 * Execution mode of the `health` is determined based on the value of the `outinfo` argument
    - By default the `outinfo` argument is blank and the `health` macro is executed in a _regular_ mode
@@ -52,7 +52,7 @@ Derived variables listed in the Table below will be stored in `myout.health` out
 | Hearing vars			| hearrate                                                                                                      |
 
 ## Loop Iterations 
-Main loop execution started at 13:02
+Main loop execution started at 18:09
 
 Loop will be executed for selected 16 study years:1992 ,1993 ,1994 ,1995 ,1996 ,1998 ,2000 ,2002 ,2004 ,2006 ,2008 ,2010 ,2012 ,2014 ,2016 ,2018 ,
 
@@ -584,5 +584,5 @@ Notes related to processing year 2018:
 ======= Year 2018 processing completed =======
 
 
----- Macro `health` ended  at 13:02 (Test mode = Yes)
+---- Macro `health` ended  at 18:09 (Test mode = Yes)
 
