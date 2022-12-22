@@ -3,6 +3,6 @@
 filename _ff "./hrs-macros/_hrs_formats.sas";
 %include _ff;
 
-filename _ff "./hrs-macros/_auxiliary_macros.sas";
+filename _ff "./hrs-macros/_auxiliary_hrs_macros.sas";
 %include _ff;
 
