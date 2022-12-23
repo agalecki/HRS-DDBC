@@ -1,5 +1,5 @@
 %let cdir_path =.;    /* Current directory */
-
+%put cdir_path = &cdir_path;
 %let fcmp_cmplib = dlfunction;
 
 filename macros "&cdir_path\hrs-macros";
@@ -28,8 +28,11 @@ data dataout.out;
 ;
 run;
 
-proc datasets library =work;
- copy out=set 
+proc datasets library = dataout;
+ copy out= work;
+ select out;
+quit;
+
 proc format;
  value skip_dressfmt
    .N = ".N=Not Available"
