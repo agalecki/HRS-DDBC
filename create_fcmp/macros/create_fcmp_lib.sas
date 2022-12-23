@@ -1,6 +1,6 @@
 %macro create_fcmp_lib(cmplib_name);
 %* cmplib_name.  Ex. DLfunction;
-%* fcmp_path  Ex. .;
+%* fcmp_path  (global) Ex. .;
 
 filename _common "&fcmp_path/src/_common_fcmp";
 
