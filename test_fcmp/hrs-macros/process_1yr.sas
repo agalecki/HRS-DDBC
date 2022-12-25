@@ -13,7 +13,7 @@ data _null_;
  length vin vout $1000;
  length all_vin all_vout $5000;
  retain  all_vin all_vout;
- all_vgrps = bind_vgrps();      /* List of var groups. Ex: subhh$ skip adldiff ...*/
+ all_vgrps = bind_vgrps("&bind_vgrps");      /* List of var groups. Ex: subhh$ skip adldiff ...*/
  nvgrps  = countw(all_vgrps);   /* Number of var groups */
  /* List of var groups sep by | . Ex: subhh$ | skip | adldiff ...*/
  all_vgrps = translate(strip(all_vgrps),"|", " ");

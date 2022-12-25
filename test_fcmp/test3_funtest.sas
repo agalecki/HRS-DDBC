@@ -1,6 +1,10 @@
+options mprint;
 %let cdir_path =.;    /* Current directory */
 %put cdir_path = &cdir_path;
-%let fcmp_cmplib = dlfunction;
+%let fcmp_cmplib = funtest;
+%let bind_vgrps = ?;/* subhh$ adldiff adlhlp iadldiff iadl */
+%*let bind_vgrps = adlhlp iadl;
+
 
 filename macros "&cdir_path\hrs-macros";
 %include macros(process_1yr array_stmnt);
@@ -14,7 +18,13 @@ libname libin "C:\Users\agalecki\Dropbox (University of Michigan)\DDBC HRS Proje
 
 
 
-%process_1yr(1995); %process_1yr(1996); %process_1yr(1998); %process_1yr(2000);
+%process_1yr(1995); 
+endsas;
+
+
+
+
+%process_1yr(1996); %process_1yr(1998); %process_1yr(2000);
 %process_1yr(2002); %process_1yr(2004); %process_1yr(2006); %process_1yr(2008); 
 %process_1yr(2010); %process_1yr(2012); %process_1yr(2014); %process_1yr(2016);
 %process_1yr(2018);
@@ -27,7 +37,7 @@ data dataout.out;
      _out2006 _out2008 _out2010 _out2012 _out2014 _out2016 _out2018
 ;
 run;
-
+endsas;
 proc datasets library = dataout;
  copy out= work;
  select out;

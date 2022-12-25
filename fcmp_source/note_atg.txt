@@ -1,0 +1,10 @@
+
+  adl_dress = adldiff_dress;
+  if adldiff_dress = 6 or adlhlp_dress = 1 then adl_dress = 1;
+
+  iadl_meals = iadldiff_meals;
+  if iadldiff_meals = 6 then iadl_meals = 1;
+
+
+array adldiff_vout {8} skip_dress skip_other adldiff_dress adldiff_walkr
+array adlhlp_vout {8} adlhlp_dress adlhlp_walkre adlhlp_walkr adlhlp_bath 
