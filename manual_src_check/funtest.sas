@@ -1,4 +1,4 @@
-%let cmplib_name = function;
+%let cmplib_name = funtest;
 
 filename _src "../src/&cmplib_name";
 filename _cmn "../src/_common_fcmp";
@@ -10,6 +10,7 @@ proc fcmp outlib = work.fun.test;
 %include _src(adlhlp_grp);
 %include _src(iadl_grp);
 %include _src(iadldiff_grp);
+%include _src(_auxiliary);
 
 run;
 quit;

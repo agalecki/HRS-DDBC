@@ -59,7 +59,7 @@ endsub; /* function studyyr_ok */
 function vgrp_ok(vgrp $) $ group = "aux";
  length vgrps $ 5000;
  length word $ 50;
- vgrps = bind_vgrps();
+ vgrps = bind_vgrps("?");  /* Dec. 25th, 2022 */
  ngrps = countw(vgrps, " ");
  ok  = 0;
  

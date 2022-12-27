@@ -33,7 +33,7 @@ endsub; /* function studyyr_ok */
 function vgrp_ok(vgrp $) $ group = "aux";
  length vgrps $ 5000;
  length word $ 50;
- vgrps = bind_vgrps();
+ vgrps = bind_vgrps("?");
  ngrps = countw(vgrps, " ");
  ok  = 0;
  

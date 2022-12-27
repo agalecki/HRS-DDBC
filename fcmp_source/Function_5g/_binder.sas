@@ -1,12 +1,15 @@
-function bind_vgrps(vgrps $) $ group = "binder";
+
+function bind_vgrps(select_vgrps $) $ group = "binder";
+  /* Changed Dec. 25, 2022 */
   /* Returns list of variable groups */ 
-  length grplist $ 5000;
+  length grplist select_vgrps $ 5000;
   /* Include all variable groups in `grplist` below.*/
   /* $ sign indicates _character_ variable group */
-  grplist = vgrps;
-  if vgrps = "?" then grplist = "subhh$ adldiff adlhlp iadldiff iadl"; 
+  grplist = select_vgrps;
+  if select_vgrps = "?" then grplist = "subhh$ adldiff adlhlp iadldiff iadl"; /* By default all vgroups */
   return(grplist);
-endsub; /* function bind_vgrps*/
+endsub; 
+
 
 function dispatch_datain(studyyr) $ group ="binder";
  length msg $15;

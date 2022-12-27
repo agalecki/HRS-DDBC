@@ -1,11 +1,20 @@
 %macro create_fcmp_lib(cmplib_name);
 %* cmplib_name.  Ex. DLfunction;
 %* fcmp_path  (global) Ex. .;
+%let sas_prog = _10-create_cmplib;
+filename printlog "&_cmplib_info_path/&cmplib_name/&sas_prog.-&cmplib_name..log";
+proc printto log = printlog new;
+run;
 
-filename _common "&fcmp_path/src/_common_fcmp";
+%put FCMP library: `%upcase(&cmplib_name)` is created  ... OK;
+%put Macro `create_fcmp_lib` is invoked by &sas_prog..sas script ... OK;
+%put Log (i.e. this file) is stored in &_cmplib_info_path/&cmplib_name folder;
 
 
-%let fcmp_src_path = &fcmp_path/src/&cmplib_name;       /* Ex.  ./src/DLFunction */
+%let src_path_name=fcmp_source; /* name of the fcmp source subfolder */
+filename _common "&fcmp_path/&src_path_name/_common_fcmp";
+
+%let fcmp_src_path = &_fcmp_source_path/&cmplib_name;       /* Ex.  ./src/DLFunction */
 %filenamesInFolder(&fcmp_src_path);  /* Dataset `_filenames` created */
 %let fcmp_files =;      /* Ex. _binder _auxiliary ... */
 data _filenames;
@@ -24,12 +33,12 @@ filename _source  "&fcmp_src_path";                     /* Ex.  filename _source
 %let _source_info = _source(&fcmp_files);
 %put  _source_info = &_source_info;
 
-proc datasets library = _libout;
+proc datasets library = _cmplib;
 delete &cmplib_name;
 run;
 quit;
 
-proc fcmp outlib = _libout.&cmplib_name..all; /* 3 level name */
+proc fcmp outlib = _cmplib.&cmplib_name..all; /* 3 level name */
 %include _common(&_common_fcmp_files);
 %include &_source_info;
 
@@ -39,7 +48,7 @@ quit; /* FCMP */
 data dt;
  label fcmp_name ="Function/subroutine name";
  label fcmp_grp  ="Function/subroutine group";
- set _libout.&cmplib_name(keep=name value);
+ set _cmplib.&cmplib_name(keep=name value);
  if name in ("FUNCTION", "SUBROUTI");
  length scan1 scan2 fcmp_grp fcmp_name $200;
  scan1 = scan(strip(value),2,')');
@@ -55,7 +64,13 @@ proc sort data=dt;
 by fcmp_grp;
 run;
 ods listing close;
-%let html_path = &fcmp_path/html/&cmplib_name..html;
+
+libname _tmp "&_cmplib_info_path/&cmplib_name";
+data _tmp._10&cmplib_name;
+ set dt;
+run;
+
+%let html_path = &_cmplib_info_path/&cmplib_name/_10&cmplib_name..html;
 ods html file = "&html_path";
 
 Title "List of funs/subs in &cmplib_name library";
@@ -63,4 +78,7 @@ proc print data=dt;
 by fcmp_grp;
 run;
 ods html close;
+proc printto;
+run;
+
 %mend create_fcmp_lib;
