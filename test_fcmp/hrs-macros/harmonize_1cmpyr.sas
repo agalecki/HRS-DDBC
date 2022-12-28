@@ -1,4 +1,4 @@
-%macro harmonize_1cmpyr (year, bind_vgrps, outdt);
+%macro harmonize_1cmpyr (year, bind_vgrps=?, outdata = work.out);
 /* Global macro variable `hrs_fcmp` required */
 /* Invoke this macro after options cmplib=_cmplib.&hrs_fcmp statement*/
 %let all_vgrps =; 
@@ -16,6 +16,7 @@ data _null_;
  retain  all_vin all_vout;
  all_vgrps = bind_vgrps("&bind_vgrps");      /* List of var groups. Ex: subhh$ skip adldiff ...*/
  nvgrps  = countw(all_vgrps);   /* Number of var groups */
+ 
  /* List of var groups sep by | . Ex: subhh$ | skip | adldiff ...*/
  all_vgrps = translate(strip(all_vgrps),"|", " ");
  datain  = dispatch_datain(&year);
@@ -48,13 +49,14 @@ run;
 %put all_vin2  :=&all_vin2;
 
 %put all_vout  :=&all_vout;
+%if %length(&datain) =0 %then %return;
 
 %let all_vin2s =;
-%all_vin2nodupkey; /* Remove duplicates from `_all_vin macro variable */
+%all_vin2nodupkey; /* Remove duplicates from `_all_vin2 macro variable */
 %put all_vin2s := &all_vin2s;
 
 
-data _out&year; 
+data &outdata; 
   set hrs_data.&datain(keep = pn hhid &all_vin2s);
   missing O D R I N;
   _CHARZZZ_= ""; /*  Artificial variable */
@@ -69,11 +71,8 @@ data _out&year;
    %array_stmnt2(&year, &vgrp, &vout, &vin);
 %end;
   drop &all_vin2s;
-  drop _CHARZZZ_ _CHAR_;
+  drop _CHARZZZ_ _ZZZ_;
 run;
 
-Title "Year &year(DATA=&datain) processed for &nvgrps groups of variables (obs=30)";
-proc print data=_out&year (obs=30);
-run;
 
 %mend harmonize_1cmpyr;

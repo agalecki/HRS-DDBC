@@ -31,8 +31,8 @@ array &vgrpnm._vin {&vin_cnt} &ctype  _temporary_;
 
 %mend array_stmnt2; 
 
-%macro all_vin2nodupkey;
-
+%macro all_vin2nodupkey ;
+options nosource nonotes nomprint;
 /* Remove duplicates from `all_vin2` macro variable */
 data _all_vin2;
  length  all_vin2 $ 5000;
@@ -61,5 +61,6 @@ data null;
  all_vin2s = strip(all_vin2s) || " " || strip(vin);
  if last then call symput("all_vin2s", all_vin2s);
 run;
+options source notes mprint;
 %mend all_vin2nodupkey;
 

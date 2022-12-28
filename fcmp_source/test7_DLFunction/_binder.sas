@@ -56,6 +56,19 @@ function dispatch_vout(vgrp $) $ group ="binder";
 return(vout);
 endsub;      /* function dispatch_vout */
 
+function vout_labels(vout $) $ group="binder";  /* added Dec. 2022 */
+/* Returns labels for vout  variables */
+length v $32;
+length tmpc lbl $255;
+v = lowcase(vout);
+tmpc = "--Variable " || strip(v); 
+select(v);
+  when("subhh") lbl = "SUB-HOUSEHOLD IDENTIFIER";
+  otherwise lbl =tmpc;
+end;
+return(lbl);
+endsub;
+
 function dispatch_vin(studyyr, vgrp $) $ group ="binder";
 
 /* Based on `studyyr` and `vgrp` returns list of input variables */
@@ -80,6 +93,7 @@ function dispatch_vin(studyyr, vgrp $) $ group ="binder";
   put "FUN dispatch_vin(): studyyr=" studyyr ", vgrp=" vgrp ", vin =" vin msg2; 
 return(vin);
 endsub;      /* function dispatch_vin */
+
 
 subroutine exec_vgrpx(studyyr, vgrp $, cout[*], cin[*]) group ="binder";
 /* Used for _numeric_  variable groups only */ 

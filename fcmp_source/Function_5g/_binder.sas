@@ -22,6 +22,7 @@ function dispatch_datain(studyyr) $ group ="binder";
  yr2  = substr(yearc,3,2);
 
  select(studyyr);
+   when(1992, 1993, 1994) dt = "";  /* ?? */
    when(1995) dt ="a95e_r";
    when(1996) dt ="h96e_r";
    when(1998) dt ="h98e_r";
@@ -49,6 +50,20 @@ function dispatch_vout(vgrp $) $ group ="binder";
  put "FUN: dispatch_vout(): vgrp =" vgrp ", vout =" vout msg; 
 return(vout);
 endsub;      /* function dispatch_vout */
+
+function vout_labels(vout $) $  group = "binder";  /* added Dec. 2022 */
+/* Returns labels for vout  variables */
+length v $32;
+length tmpc lbl $255;
+v = lowcase(vout);
+tmpc = "-- Variable: " || strip(v); 
+select(v);
+  when("subhh") lbl = "SUB-HOUSEHOLD IDENTIFIER";
+  otherwise lbl =tmpc;
+end;
+return(lbl);
+endsub;
+
 
 function dispatch_vin(studyyr, vgrp $) $ group ="binder";
 
@@ -79,7 +94,7 @@ subroutine exec_vgrpx(studyyr, vgrp $, cout[*], cin[*]) group ="binder";
   length msg2 $50;
   msg2 = yrvgrp_ok(studyyr, vgrp);
 
- put "- SUB  exec_vgrpx(): studyyr:=" studyyr ", vgrp :=" vgrp  msg2;
+ * put "- SUB  exec_vgrpx(): studyyr:=" studyyr ", vgrp :=" vgrp  msg2; /* ?? commented out */
  outargs cout;
  length _vgrpx $50;
  _vgrpx = lowcase(vgrp);
@@ -98,7 +113,7 @@ function exec_vgrpc(studyyr, vgrp $, cin[*] $) $ group ="binder";
   length msg2 $50;
   msg2 = yrvgrp_ok(studyyr, vgrp);
 
- put "- FUN exec_vgrpc(): studyyr:=" studyyr ", vgrp :=" vgrp msg2;
+ *put "- FUN exec_vgrpc(): studyyr:=" studyyr ", vgrp :=" vgrp msg2; /* ?? commented out */
 
  length _vgrpc $50;
  _vgrpc = lowcase(vgrp);

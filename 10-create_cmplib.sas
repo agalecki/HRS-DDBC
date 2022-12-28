@@ -10,7 +10,7 @@ options mprint nocenter;
 
 
 %create_fcmp_lib(test7_DLFunction);
-endsas;
+
 
 %create_fcmp_lib(Function_5g);
 
