@@ -1,7 +1,7 @@
 /* Create global macro vars */
 
 
-libname _cmplib "&fcmp_path\_cmplib"   FILELOCKWAIT=60;
+%let _cmplib_path= &fcmp_path\_cmplib;
 
 %let _cmplib_info_path = &fcmp_path/_cmplib_info;
 

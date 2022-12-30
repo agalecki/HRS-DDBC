@@ -1,3 +1,7 @@
+function version_info() $ group = "binder";
+/*-- Includes the name of FCMP member and date */
+return ("Version info: `HealthC_init`: 2022-12-28 <yyyy-mm-dd>");
+endsub;
 
 function bind_vgrps(select_vgrps $) $ group = "binder";
   /* Changed Dec. 25, 2022 */
@@ -6,7 +10,7 @@ function bind_vgrps(select_vgrps $) $ group = "binder";
   /* Include all variable groups in `grplist` below.*/
   /* $ sign indicates _character_ variable group */
   grplist = select_vgrps;
-  if select_vgrps = "?" then grplist = "subhh$ skip adldiff adlhlp equip iadldiff iadlhlp why"; /* By default all vgroups */
+  if select_vgrps = "?" then grplist = "subhh$ healthrate cancer"; /* By default all vgroups */
   return(grplist);
 endsub; 
 
@@ -25,11 +29,11 @@ function dispatch_datain(studyyr) $ group ="binder";
    when(1992) dt ="health";
    when(1993) dt ="BR21";
    when(1994) dt ="w2b";
-   when(1995) dt ="a95e_r";
-   when(1996) dt ="h96e_r";
-   when(1998) dt ="h98e_r";
-   when(2000) dt ="h00e_r";
-   otherwise  dt ="h"||yr2||"g_r";
+   when(1995) dt ="a95b_r";
+   when(1996) dt ="h96b_r";
+   when(1998) dt ="h98b_r";
+   when(2000) dt ="h00b_r";
+   otherwise  dt ="h"||yr2||"c_r";
  end;  
 return(dt);
 endsub; /* function dispatch_datain */
@@ -43,13 +47,8 @@ function dispatch_vout(vgrp $) $ group ="binder";
  msg = vgrp_ok(vgrp);
  select(_vgrp);
   when("subhh$")     vout = "subhh";
-  when("skip")       vout = "skip";
-  when("adldiff")    vout = "adldiff_dress adldiff_walk adldiff_bath adldiff_eat adldiff_bed adldiff_toilt";
-  when("adlhlp")     vout = "adlhlp_dress adlhlp_walk adlhlp_bath adlhlp_eat adlhlp_bed adlhlp_toilt";
-  when("equip")      vout = "equip_walk equip_bed";
-  when("iadldiff")   vout = "iadldiff_meals iadldiff_shop iadldiff_phone iadldiff_meds iadldiff_money";
-  when("iadlhlp")    vout = "iadlhlp_meals iadlhlp_shop iadlhlp_phone iadlhlp_meds iadlhlp_money";
-  when("why")        vout = "why_meals why_shop why_phone why_meds why_money";
+  when("healthrate") vout = "hlth_rate htn_cont"; 
+  when("cancer")     vout = "ca ca_dr ca_tx ca_new ca_yr";
   otherwise  ok =0;
  end;
  put "FUN: dispatch_vout(): vgrp =" vgrp ", vout =" vout msg; 
@@ -68,13 +67,8 @@ function dispatch_vin(studyyr, vgrp $) $ group ="binder";
   msg2 = yrvgrp_ok(studyyr, vgrp);
   select(_vgrp);
    when("subhh$")     vin = subhh_vin(studyyr);
-   when("skip")       vin = skip_vin(studyyr);
-   when("adldiff")    vin = adldiff_vin(studyyr);
-   when("adlhlp")     vin = adlhlp_vin(studyyr);
-   when("equip")      vin = equip_vin(studyyr);
-   when("iadldiff")   vin = iadldiff_vin(studyyr);
-   when("iadlhlp")    vin = iadlhlp_vin(studyyr);
-   when("why")        vin = why_vin(studyyr);
+   when("healthrate") vin = healthrate_vin(studyyr); 
+   when("cancer")     vin = cancer_vin(studyyr);
    otherwise  ok=0;
   end;
   put "FUN dispatch_vin(): studyyr=" studyyr ", vgrp=" vgrp ", vin =" vin msg2; 
@@ -93,13 +87,8 @@ subroutine exec_vgrpx(studyyr, vgrp $, cout[*], cin[*]) group ="binder";
  length _vgrpx $50;
  _vgrpx = lowcase(vgrp);
  select(_vgrpx);
-  when("skip")        call skip_sub(studyyr, cout, cin);
-  when("adldiff")     call adldiff_sub(studyyr, cout, cin);
-  when("adlhlp")      call adlhlp_sub(studyyr, cout, cin);
-  when("equip")       call equip_sub(studyyr, cout, cin);
-  when("iadldiff")    call iadldiff_sub(studyyr, cout, cin);
-  when("iadlhlp")     call iadlhlp_sub(studyyr, cout, cin);
-  when("why")         call why_sub(studyyr, cout, cin);
+  when("healthrate") call healthrate_sub(studyyr, cout, cin); 
+  when("cancer")     call cancer_sub    (studyyr, cout, cin);
   otherwise;
  end;
 endsub; /* subroutine exec_vgrpx */

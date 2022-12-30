@@ -1,3 +1,8 @@
+function version_info() $ group = "binder";
+/*-- Includes the name of FCMP member and date */
+return ("Version info: `test7_DLFunction`: 2022-12-30 <yyyy-mm-dd>");
+endsub;
+
 
 function bind_vgrps(select_vgrps $) $ group = "binder";
   /* Changed Dec. 25, 2022 */

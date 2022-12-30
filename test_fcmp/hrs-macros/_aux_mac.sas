@@ -1,10 +1,8 @@
-%macro expand_years(years);
+%macro expand_years(hrsyears);
 
-data _temp1_init;
+data _hrsyears;
  length years $ 100;
- length year_sel $1;
- years = "&years";
- year_sel = "Y";
+ years = "&hrsyears";
  nwords = countw(years, " ");
  do idx =1 to nwords;
    yrc  = scan(years, idx, ' ');
@@ -19,9 +17,24 @@ data _temp1_init;
     end; /* do  jx */
  end; /* do wordi */
  run;
+ 
 %mend expand_years;
+
 
 /* https://support.sas.com/resources/papers/proceedings09/022-2009.pdf */
 %macro isBlank(param);
- %sysevalf(%superq(param)=,boolean)
+ %sysevalf(%superq(param)=, boolean)
 %mend isBlank;
+
+
+%macro cum_var(data, cvar);
+/* Cumulate cvar strings and store in `_tmpc` macro variable */ 
+/* Mvar `_tmpc` needs to be set  */
+data _null_;
+ set &data (keep=&cvar) end = last;
+ length _tmpc $5000;
+ retain _tmpc;
+ _tmpc = strip(_tmpc) || " " || strip(&cvar); 
+ if last then call symput("_tmpc", strip(_tmpc)); 
+run;
+%mend cum_var;
