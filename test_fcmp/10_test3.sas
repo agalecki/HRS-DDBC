@@ -13,55 +13,124 @@ libname hrs_data "C:\Users\agalecki\Dropbox (University of Michigan)\DDBC HRS Pr
 %include _tstmac(_aux_mac);
 
 
-%macro IADl_function_test(hrsyears, cmplib = WORK, member = Function_5g);
-   %hrs_project_info(&member, fcmplib = &cmplib, hrsyears = &hrsyears, printit =N);
-   
-/* STEP 0:Create list of harmonized vars */
+%macro IADL_function_test(hrsyears, 
+                          hrs_datalib =,
+                          fcmplib = WORK, 
+                          fcmpmember = Function_5g, 
+                          out = WORK);
+/* Load FCMP library FCMP member */                          
+options cmplib = &fcmplib..&fcmpmember;
+
+/* --- Use `hrs_project_info` function to extract project info from cmplib */
+%fcmp_member_datainfo; /* Data with _label, _member, _version, _datestamp vars created*/
+*proc print data = fcmp_member_datainfo; run;
+
+%local fcmp_label fcmp_version fcmp_datestamp fcmp_member;
+proc sql noprint; /* Macro vars created */
+ select _member     into :fcmp_member    from fcmp_member_datainfo;
+ select _version    into :fcmp_version   from fcmp_member_datainfo;
+ select _label      into :fcmp_label     from fcmp_member_datainfo;
+ select _datestamp  into :fcmp_datestamp from fcmp_member_datainfo;
+quit;
+
+%put fcmp_member          := &fcmp_member;
+%put FCMP version (date)  := &fcmp_version;
+%put fcmp_label           := &fcmp_label;
+%put Compiled on          := &fcmp_datestamp;
+
+
+/*-- Data: _datain_info,  ---*/
+%hrs_project_info(&fcmpmember, fcmplib = &fcmplib, hrsyears = &hrsyears, printit = N);
+
+/* STEP 0: Create list of harmonized vars */
 proc sql noprint;
  select count(*) into :cnt_vout from _vout_info;
  select vout_nm  into :vout_list  separated by " "  from _vout_info;
- select ctype    into :ctype_list separated by "!" from _vout_info;
- select vout_lbl into :lbl_list separated by "!" from _vout_info;
+ select vout_lbl into :lbl_list   separated by "~"  from _vout_info;
 quit;
+
+data _tmp1;
+  set  _vout_info;
+  if strip(ctypelen) ne '';
+run;
+
+proc print data=_tmp1;
+run;
+
+
+proc sql noprint;
+ select count(*)  into :cnt_ctypelen                    from _tmp1;
+ select ctypelen  into :ctypelen_list separated by "~"  from _tmp1;
+ select vout_nm   into :ctypelen_nms  separated by " "  from _tmp1;
+quit;
+
 %put # of harmonized vars    := &cnt_vout;
 %put List of harmonized vars := &vout_list;
-%put List of ctype := &ctype_list;
+%put # of vars with non blank length := &cnt_ctypelen; 
+%put List of ctypelen values := &ctypelen_list;
 
-/* STEP0: initialize `_hrs_out` data */
-data _hrs_out (label ="XYZ");
+/* STEP0: initialize `_harmonized_out` data */
+data _harmonized_out (label ="fcmp_label (FCMP &fcmp_member compiled on &fcmp_datestamp).");
  label hhid         = "HOUSEHOLD IDENTIFIER"
       pn            = "PERSON NUMBER"
       studyyr       = "STUDY YEAR";
- length hhid $6 pn $3;
- 
- %do i=1 %to &cnt_vout;
+ /*-- Label statements ---*/
+ %do i=1 %to &cnt_vout; 
    %let vnm = %scan(&vout_list, &i);   
-   %let vlbl= %scan(&lbl_list, &i, !);
-   %let ctp = %scan(&ctype_list, &i, !);
-   %put vnm := &vnm;
-   %put ctp := &ctp;
-   %if %isBlank(&ctp) = 0 %then length &vnm $1;;
+   %let vlbl= %scan(&lbl_list, &i, ~);
+   %*put vnm := &vnm;
    label &vnm = "&vlbl";
-  %end;
+ %end;    
+ 
+ /*-- Length statements ---*/      
+ length hhid $6 pn $3;
+  %if %eval(&cnt_ctypelen) > 0 %then 
+    %do i= 1 %to &cnt_ctypelen;
+     %let vnm = %scan(&ctypelen_nms, &i);  
+     %let ctp = %scan(&ctypelen_list, &i, ~);
+     length &vnm &ctp;
+    %end;
+ 
   call missing(of _all_);
   stop;
 ;
 run;
 
 
+%mend IADL_function_test;
 
-%mend IADl_function_test;
+%let fcmp_member = Function_5g;
+libname lib1 "&_cmplib_path/&fcmp_member";
+%IADL_function_test(1992-2000, fcmplib =lib1, fcmpmember = &fcmp_member);
+ods html close;
+endsas;
+
+
+
+
+
+
+   
+
+ 
+ 
+
+
+
+
+
+%mend IADL_function_test;
 
 
 ods listing close;
 options nocenter;
 
 ods html;
-%let member = Function_5g;
+%let fcmp_member = Function_5g;
 libname lib1 "&_cmplib_path/
-%IADl_function_test(1992-2000, cmplib =_cmplib, member = &member);
+%IADL_function_test(1992-2000, cmplib =_cmplib, member = &member);
 ods html close;
-endsas;
+ENDSAS;
 
 
 /* --- function_5g ----*/

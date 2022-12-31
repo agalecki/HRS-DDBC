@@ -1,14 +1,14 @@
-function hrs_project_info(item $) $ group = "binder";
-/*-- Includes the name of FCMP member and date */
+function fcmp_member_info(item $) $ group = "binder";
+/*-- Returns info on FCMP member */
  length tx  $20;
  length res $200; 
  tx = lowcase(item);
  select(tx);
-    when ("label")        res= "ADL/IADL function";
+    when ("label")        res= "ADL/IADL function with 5 var groups";
     when ("fcmp_member")  res= "Function_5g";
     when ("version_date") res= "29Dec2022";
     when ("datestamp")    res= put("&sysdate9"d, DATE9.);
-  otherwise res= "hrs_project_info items: label fcmp_member version_date datestamp"; 
+  otherwise res= "fcmp_member_info items: label fcmp_member version_date datestamp"; 
   end;
 return (res);
 endsub;

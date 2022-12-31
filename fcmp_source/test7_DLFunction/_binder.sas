@@ -1,5 +1,5 @@
-function hrs_project_info(item $) $ group = "binder";
-/*-- Includes the name of FCMP member and date */
+function fcmp_member_info(item $) $ group = "binder";
+/*-- Povides info on FCMP member */
  length tx  $20;
  length res $200; 
  tx = lowcase(item);

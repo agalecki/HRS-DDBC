@@ -16,8 +16,8 @@ options nocenter;
 /* --- Process one fcmp member at a time */
 
 %*let fcmp_member = Function_5g;
-%*let fcmp_member = test7_DLFunction;
-%let fcmp_member = healthC_init;
+%let fcmp_member = test7_DLFunction;
+%*let fcmp_member = healthC_init;
 
 /*-- Do not make changes below */
 libname libx "&_cmplib_path\&fcmp_member";

@@ -26,15 +26,17 @@ data _hrsyears;
  %sysevalf(%superq(param)=, boolean)
 %mend isBlank;
 
-
-%macro cum_var(data, cvar);
-/* Cumulate cvar strings and store in `_tmpc` macro variable */ 
-/* Mvar `_tmpc` needs to be set  */
-data _null_;
- set &data (keep=&cvar) end = last;
- length _tmpc $5000;
- retain _tmpc;
- _tmpc = strip(_tmpc) || " " || strip(&cvar); 
- if last then call symput("_tmpc", strip(_tmpc)); 
+%macro fcmp_member_datainfo;
+/* Creates auxiliary dataset with info on fcmp member */
+/* Requires that `options cmplib=` be defined */
+data fcmp_member_datainfo;
+ length _label  $256;
+ length _member $32;
+ length _version $30;
+ length _datestamp $30;
+_label     = fcmp_member_info("label");
+_member    = fcmp_member_info("fcmp_member");
+_version   = fcmp_member_info("version_date");
+_datestamp = fcmp_member_info("datestamp");
 run;
-%mend cum_var;
+%mend  fcmp_member_datainfo;

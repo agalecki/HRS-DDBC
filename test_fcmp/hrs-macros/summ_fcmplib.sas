@@ -5,7 +5,7 @@
 
 
 %macro hrs_project_info(
-   member,                  /* FCMP lib member: < */
+   fcmpmember,              /* FCMP lib member: */
    fcmplib = WORK,          /* FCMP library */
    hrsyears = ,             /* <1992 1994-2000, 2018> */ 
    vgrps = ?,               /* Variable groups. Ex: <subhh$ healthrate cancer>. 
@@ -15,24 +15,23 @@
  );
 
 /* Select member in fcmp cmplib library */ 
-options cmplib = &fcmplib..&member;
-%let member =; /* `fcmp_member` will be used instead */
+options cmplib = &fcmplib..&fcmpmember;
+%let fcmpmember =; /* `fcmp_member` extracted from fcmp library will be used instead */
 
 
 %local version_date datestamp fcmp_member;
 %let version_date=;
-%let datesatmp=;
+%let datestamp=;
 %let fcmp_member =;
-data _null_;
- length version_date datestamp fcmp_member $100;
- version_date = hrs_project_info("version_date");
- datestamp = hrs_project_info("datestamp");
- fcmp_member = hrs_project_info("fcmp_member");
- put  fcmp_member =; 
- call symput("version_date", strip(version_date));
- call symput("datestamp", strip(datestamp));
- call symput("fcmp_member",strip(fcmp_member));
-run;
+%fcmp_member_datainfo; /* Data with _label, _member, _version, _date vars created*/
+
+proc sql noprint; /* Macro vars created */
+ select _version    into :version_date  separated by " "  from fcmp_member_datainfo;
+ select _datestamp  into :datestamp     separated by " "  from fcmp_member_datainfo;
+ select _member     into :fcmp_member     separated by " "  from fcmp_member_datainfo;
+quit;
+
+ 
 %put fcmp_member := &fcmp_member;
 
 
@@ -40,10 +39,10 @@ run;
 %expand_years(&hrsyears); 
 data _datain_info;
   set _hrsyears(keep = year);
-  length member $ 32;
+  length fcmp_member $ 32;
   length datain $ 20;
   length skipit $ 1;
-  member = "&fcmp_member";
+  fcmp_member = "&fcmp_member";
   datain = dispatch_datain(year);
   skipit = " ";
   if strip(datain) = "" then skipit = "Y";
@@ -100,6 +99,7 @@ data _vout_length; /* One row per vout variable */
   vout_nm = scan(vout_nms,i, ' '); /*-- Variable name --*/
   vout_nm = trim(vout_nm);
   len = vout_length(vout_nm);
+  if strip(len) = "." then len ="";
   output;
  end;
  keep rec_no vout_nm len;
@@ -111,10 +111,12 @@ data _vout_info;
  length vout_nm $32;
  length ctype $1;
  length len $5;
+ length ctypelen $6;
  length vout_lbl $256;
 
  merge _vout_lbls _vout_length;
  by rec_no;
+ ctypelen = strip(ctype)||strip(len);
 drop rec_no;
 run;
 
@@ -184,11 +186,10 @@ run;
 *run;
 
 Title "DATA: `_yr_by_vgrps_info`: Cartesian product: year by vgroup (cnt_vin = 0 omitted)";
-Title2 "Dataset _yr_by_vgrps_driver includes rows with cnt_vin =0)";
 proc print data = _yr_by_vgrps_info;
 run;
 
-Title "DATA: `_yr_by_vgrpszzz_inf`: Cartesian product: year by vgroup (_ZZZ_ included)";
+Title "DATA: `_yr_by_vgrpszzz_info`: Cartesian product: year by vgroup (_ZZZ_ vars included)";
 proc print data = _yr_by_vgrpszzz_info;
 run; 
 
@@ -197,25 +198,23 @@ title;
 
 %macro fcmp_member_info(
   fcmplib,                /* FCMP library */
-  member,                 /* FCMP member */
+  fcmpmember,             /* FCMP member */
   printit =Y
 );
-options cmplib = &fcmplib..&member;
-%let member =; /* `fcmp_member` will be used instead */
+options cmplib = &fcmplib..&fcmpmember;
+%let fcmpmember =; /* `fcmp_member` will be used instead */
 
 %local version_date datestamp fcmp_member;
 %let version_date=;
 %let datestamp=;
 %let fcmp_member =;
-data _null_;
- length version_date datestamp fcmp_member $100;
- version_date = hrs_project_info("version_date");
- datestamp = hrs_project_info("datestamp");
- fcmp_member = hrs_project_info("fcmp_member");
- call symput("version_date", strip(version_date));
- call symput("datestamp", strip(datestamp));
- call symput("fcmp_member", strip(fcmp_member));
-run;
+%fcmp_member_datainfo; /* Data with _label, _member, _version, _date vars created*/
+
+proc sql noprint;
+ select _version    into :version_date  separated by " "  from fcmp_member_datainfo;
+ select _datestamp  into :datestamp     separated by " "  from fcmp_member_datainfo;
+ select _member     into :fcmp_member   separated by " "  from fcmp_member_datainfo;
+quit;
 
 
 data fcmp_member_info;

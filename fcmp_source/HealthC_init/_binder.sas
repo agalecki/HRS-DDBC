@@ -1,10 +1,10 @@
-function hrs_project_info(item $) $ group = "binder";
-/*-- Includes the name of FCMP member and date */
+function fcmp_member_info(item $) $ group = "binder";
+/*-- Provides info on FCMP member */
  length tx  $20;
  length res $200; 
  tx = lowcase(item);
  select(tx);
-    when ("label")        res= "Health condition initial version";
+    when ("label")        res= "Health condition (template for other projects)";
     when ("fcmp_member")  res= "HealthC_init";
     when ("version_date") res= "31Dec2022";
     when ("datestamp")    res= put("&sysdate9"d, DATE9.);
