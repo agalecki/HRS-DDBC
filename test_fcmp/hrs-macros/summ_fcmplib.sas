@@ -16,20 +16,24 @@
 
 /* Select member in fcmp cmplib library */ 
 options cmplib = &fcmplib..&member;
+%let member =; /* `fcmp_member` will be used instead */
 
-%local version_date datestamp;
+
+%local version_date datestamp fcmp_member;
 %let version_date=;
 %let datesatmp=;
-%let member =;
+%let fcmp_member =;
 data _null_;
- length version_date datestamp member $100;
+ length version_date datestamp fcmp_member $100;
  version_date = hrs_project_info("version_date");
  datestamp = hrs_project_info("datestamp");
- member = hrs_project_info("fcmp_member");
+ fcmp_member = hrs_project_info("fcmp_member");
+ put  fcmp_member =; 
  call symput("version_date", strip(version_date));
  call symput("datestamp", strip(datestamp));
- call symput(member,strip(member));
+ call symput("fcmp_member",strip(fcmp_member));
 run;
+%put fcmp_member := &fcmp_member;
 
 
 /* Create `_hrsyears` dataset with `year` variable */
@@ -39,7 +43,7 @@ data _datain_info;
   length member $ 32;
   length datain $ 20;
   length skipit $ 1;
-  member = "&member";
+  member = "&fcmp_member";
   datain = dispatch_datain(year);
   skipit = " ";
   if strip(datain) = "" then skipit = "Y";
@@ -47,13 +51,13 @@ run;
 
 
 data _vgrps_info;
-  length member $ 32;
+  length fcmp_member $ 32;
   length vgrps $ 1000;
   length vgrp $ 32;
   length ctype $ 1;
   length cnt_vout 8;
   length vout_nms $ 1000;
-  member = "&member";
+  fcmp_member = "&fcmp_member";
 
   vgrps = bind_vgrps("&vgrps");
   vgrps_sep = translate(trim(vgrps), "!", " ");
@@ -67,7 +71,7 @@ data _vgrps_info;
    cnt_vout = countw(vout_nms);
    output;
   end;
-  keep member vgrp cnt_vout vout_nms ctype;
+  keep fcmp_member vgrp cnt_vout vout_nms ctype;
 run;
 
 
@@ -102,7 +106,7 @@ data _vout_length; /* One row per vout variable */
 run;
 
 data _vout_info;
- length member $ 32;
+ length fcmp_member $ 32;
  length vgrp   $ 32;
  length vout_nm $32;
  length ctype $1;
@@ -123,7 +127,7 @@ run;
 
 data xprod_yr_by_vgrps;
  set _datain_skip_info;
- label member = "FCMP library member name";
+ label fcmp_member = "FCMP library member name";
  label vgrp  =  "Group variable name ";
  label ctype =  "Group variable type";
  label cnt_vin = "Number of input variables in a given vgrp";
@@ -162,7 +166,7 @@ run;
 
 Title  "DATA: `_datain_info`: HRS Datasets.";
 title2 "Rows skipit = Y will be omitted. Data `_datain_skip_info` will be used."; 
-title3 "FCMP member `&member` compiled on &datestamp";
+title3 "FCMP member `&fcmp_member` compiled on &datestamp";
 title4 "HRS years: &hrsyears"; 
 proc print data = _datain_info;
 run;
@@ -180,12 +184,12 @@ run;
 *run;
 
 Title "DATA: `_yr_by_vgrps_info`: Cartesian product: year by vgroup (cnt_vin = 0 omitted)";
-Title "Dataset _yr_by_vgrps_driver includes rows with cnt_vin =0)";
+Title2 "Dataset _yr_by_vgrps_driver includes rows with cnt_vin =0)";
 proc print data = _yr_by_vgrps_info;
 run;
 
-Title "DATA: `_yr_by_vgrps_driver`: Cartesian product: year by vgroup (_ZZZ_ included)";
-proc print data = _yr_by_vgrps_driver;
+Title "DATA: `_yr_by_vgrpszzz_inf`: Cartesian product: year by vgroup (_ZZZ_ included)";
+proc print data = _yr_by_vgrpszzz_info;
 run; 
 
 title;
@@ -197,26 +201,27 @@ title;
   printit =Y
 );
 options cmplib = &fcmplib..&member;
+%let member =; /* `fcmp_member` will be used instead */
 
-%local version_date datestamp member;
+%local version_date datestamp fcmp_member;
 %let version_date=;
 %let datestamp=;
-%let member =;
+%let fcmp_member =;
 data _null_;
- length version_date datestamp member $100;
+ length version_date datestamp fcmp_member $100;
  version_date = hrs_project_info("version_date");
  datestamp = hrs_project_info("datestamp");
- member = hrs_project_info("fcmp_member");
+ fcmp_member = hrs_project_info("fcmp_member");
  call symput("version_date", strip(version_date));
  call symput("datestamp", strip(datestamp));
- call symput("member", strip(member));
+ call symput("fcmp_member", strip(fcmp_member));
 run;
 
 
 data fcmp_member_info;
  label fcmp_name ="Function/subroutine name";
  label fcmp_grp  ="Function/subroutine group";
- set &fcmplib..&member(keep=name value);
+ set &fcmplib..&fcmp_member(keep=name value);
  if name in ("FUNCTION", "SUBROUTI");
  length scan1 scan2 fcmp_grp fcmp_name $200;
  scan1 = scan(strip(value),2,')');
@@ -234,7 +239,7 @@ run;
 
 /* Conditionally prints info datasets */ 
 %if &printit = Y %then  %do;
- Title "FCMP member:  &member.. Compiled on &datestamp";
+ Title "FCMP member:  &fcmp_member.. Compiled on &datestamp";
  proc print data = fcmp_member_info; 
  by fcmp_grp;
  run;

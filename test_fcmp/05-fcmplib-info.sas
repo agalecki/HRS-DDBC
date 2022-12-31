@@ -13,14 +13,18 @@ options mprint;
 ods listing close;
 options nocenter;
 
+/* --- Process one fcmp member at a time */
+
+%*let fcmp_member = Function_5g;
+%*let fcmp_member = test7_DLFunction;
+%let fcmp_member = healthC_init;
+
+/*-- Do not make changes below */
+libname libx "&_cmplib_path\&fcmp_member";
 ods html file = "&test_fcmp_path/05-fcmplib-info1.html";
-libname lib1 "&_cmplib_path\Function_5g";
-%fcmp_member_info(lib1, Function_5g);
+%fcmp_member_info(libx, &fcmp_member);
 ods html close;
 
-
 ods html file = "&test_fcmp_path/05-fcmplib-info2.html";
-%hrs_project_info(Function_5g, fcmplib=lib1, hrsyears = 1992-2000); 
-%*hrs_project_info( test7_DLFunction, fmplib=_cmplib, hrsyears = 1992-2000); 
-
+%hrs_project_info(&fcmp_member, fcmplib=libx, hrsyears = 1992-2000); 
 ods html close;

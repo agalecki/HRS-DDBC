@@ -1,6 +1,16 @@
-function version_info() $ group = "binder";
+function hrs_project_info(item $) $ group = "binder";
 /*-- Includes the name of FCMP member and date */
-return ("Version info: `test7_DLFunction`: 2022-12-30 <yyyy-mm-dd>");
+ length tx  $20;
+ length res $200; 
+ tx = lowcase(item);
+ select(tx);
+    when ("label")        res= "ADL/IADL function with 7 var groups";
+    when ("fcmp_member")  res= "test7_DLFunction";
+    when ("version_date") res= "30Dec2022";
+    when ("datestamp")    res= put("&sysdate9"d, DATE9.);
+  otherwise res= "hrs_project_info items: label fcmp_member version_date datestamp"; 
+  end;
+return (res);
 endsub;
 
 
@@ -17,9 +27,6 @@ endsub;
 
 
 function dispatch_datain(studyyr) $ group ="binder";
- length msg $15;
- msg = studyyr_ok(studyyr);
- put "FUN dispatch_datain(): studyr :=" studyyr msg;
  length dt $32;
  length yr2 $2;
  length yearc $4;
@@ -44,8 +51,6 @@ function dispatch_vout(vgrp $) $ group ="binder";
  length vout $500;
  length _vgrp $500;
  _vgrp = lowcase(vgrp);
- length msg $15;
- msg = vgrp_ok(vgrp);
  select(_vgrp);
   when("subhh$")     vout = "subhh";
   when("skip")       vout = "skip";
@@ -55,14 +60,13 @@ function dispatch_vout(vgrp $) $ group ="binder";
   when("iadldiff")   vout = "iadldiff_meals iadldiff_shop iadldiff_phone iadldiff_meds iadldiff_money";
   when("iadlhlp")    vout = "iadlhlp_meals iadlhlp_shop iadlhlp_phone iadlhlp_meds iadlhlp_money";
   when("why")        vout = "why_meals why_shop why_phone why_meds why_money";
-  otherwise  ok =0;
+  otherwise;
  end;
- put "FUN: dispatch_vout(): vgrp =" vgrp ", vout =" vout msg; 
 return(vout);
 endsub;      /* function dispatch_vout */
 
-function vout_labels(vout $) $ group="binder";  /* added Dec. 2022 */
-/* Returns labels for vout  variables */
+function vout_label(vout $) $ group="binder";  /* added Dec. 2022 */
+/* Returns label for vout  variables */
 length v $32;
 length tmpc lbl $255;
 v = lowcase(vout);
@@ -74,17 +78,29 @@ end;
 return(lbl);
 endsub;
 
+
+function vout_length(vout $)  group = "binder";  /* added Dec. 2022 */
+/* Returns length for vout  variable */
+/* It is mandatory to provide length for character variables */
+length v $32;
+length tmpc len $10;
+v = lowcase(vout); 
+select(v);
+  when("subhh") len = 1;
+  otherwise;
+end;
+return(len);
+endsub;
+
+
 function dispatch_vin(studyyr, vgrp $) $ group ="binder";
 
 /* Based on `studyyr` and `vgrp` returns list of input variables */
  length vin $500;
  length _vgrp $500;
- length msg2 $25;
  _vgrp = lowcase(vgrp);
  
- /* Check studyyr, vgrp arguments */
-  msg2 = yrvgrp_ok(studyyr, vgrp);
-  select(_vgrp);
+   select(_vgrp);
    when("subhh$")     vin = subhh_vin(studyyr);
    when("skip")       vin = skip_vin(studyyr);
    when("adldiff")    vin = adldiff_vin(studyyr);
@@ -93,22 +109,17 @@ function dispatch_vin(studyyr, vgrp $) $ group ="binder";
    when("iadldiff")   vin = iadldiff_vin(studyyr);
    when("iadlhlp")    vin = iadlhlp_vin(studyyr);
    when("why")        vin = why_vin(studyyr);
-   otherwise  ok=0;
+   otherwise;
   end;
-  put "FUN dispatch_vin(): studyyr=" studyyr ", vgrp=" vgrp ", vin =" vin msg2; 
 return(vin);
-endsub;      /* function dispatch_vin */
+endsub;  
 
 
 subroutine exec_vgrpx(studyyr, vgrp $, cout[*], cin[*]) group ="binder";
 /* Used for _numeric_  variable groups only */ 
  
  /* Check studyyr, vgrp arguments */
-  length msg2 $50;
-  msg2 = yrvgrp_ok(studyyr, vgrp);
-
- * put "- SUB  exec_vgrpx(): studyyr:=" studyyr ", vgrp :=" vgrp  msg2;
- outargs cout;
+   outargs cout;
  length _vgrpx $50;
  _vgrpx = lowcase(vgrp);
  select(_vgrpx);
@@ -125,12 +136,7 @@ endsub; /* subroutine exec_vgrpx */;
 
 function exec_vgrpc(studyyr, vgrp $, cin[*] $) $ group ="binder";
 /* Used for _character_  variable groups only */ 
- /* Check studyyr, vgrp arguments */
-  length msg2 $50;
-  msg2 = yrvgrp_ok(studyyr, vgrp);
-
- * put "- FUN exec_vgrpc(): studyyr:=" studyyr ", vgrp :=" vgrp msg2;
-
+ 
  length _vgrpc $50;
  _vgrpc = lowcase(vgrp);
  select(_vgrpc);

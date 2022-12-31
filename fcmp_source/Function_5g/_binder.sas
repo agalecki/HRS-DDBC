@@ -102,10 +102,10 @@ function dispatch_vin(studyyr, vgrp $) $ group ="binder";
    when("adlhlp")     vin = adlhlp_vin(studyyr);
    when("iadldiff")   vin = iadldiff_vin(studyyr);
    when("iadl")       vin = iadl_vin(studyyr);
-   otherwise  ok=0;
+   otherwise;
   end;
 return(vin);
-endsub;      /* function dispatch_vin */
+endsub;   
 
 subroutine exec_vgrpx(studyyr, vgrp $, cout[*], cin[*]) group ="binder";
 /* Used for _numeric_  variable groups only */ 
