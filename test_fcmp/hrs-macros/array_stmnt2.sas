@@ -1,11 +1,11 @@
-%macro array_stmnt2(year, vgrp, vout, vin);
+%macro array_stmnt2(year, _vgrp, vout, vin);
 %local i vin_cnt vgrpnm grp_type vin2;
 /* call this macro from inside DATA step */
-%let vgrpnm = %sysfunc(compress(&vgrp,'$'));
-%let grp_type =  %sysfunc(findc(&vgrp,'$'));
+%let vgrpnm = %sysfunc(compress(&_vgrp,'$'));
+%let grp_type =  %sysfunc(findc(&_vgrp,'$'));
 %let ctype = $;
 %if %eval(&grp_type) =0 %then %let ctype =;
-%put ==>: year :=&year, var_grp := &vgrp, ctype := &ctype;
+%put ==>: year :=&year, var_grp := &_vgrp, grp_type :=&grp_type, ctype := &ctype;
 %put var_in := &vin;
 %let vin_cnt=%sysfunc(countw(&vin));
 %*put vin_cnt := &vin_cnt;
@@ -20,13 +20,13 @@ array &vgrpnm._vin {&vin_cnt} &ctype  _temporary_;
 %if &ctype = $ %then 
   %do;
       %* put --- &vgrp (character) processed ---- ;
-      &vout = exec_vgrpc(&year, "&vgrp", &vgrpnm._vin);
+      &vout = exec_vgrpc(&year, "&_vgrp", &vgrpnm._vin);
   %end;
 %else
   %do;  
       %*put --- &vgrp (numeric) processed ---- ;
        array &vgrpnm._vout {&vout_cnt} &vout;
-       call exec_vgrpx(&year, "&vgrp", &vgrpnm._vout, &vgrpnm._vin);  
+       call exec_vgrpx(&year, "&_vgrp", &vgrpnm._vout, &vgrpnm._vin);  
   %end;
 
 %mend array_stmnt2; 

@@ -32,7 +32,7 @@ data _year_outdata;
      %if &ctype =$ %then "?"; %else .Z;;
    %end;    
    %do i =1 %to &cnt_vgrps;
-     %let _vgrp = %scan(&vgrp_list, &i); 
+     %let _vgrp = %scan(&vgrp_list, &i,'~'); 
      %let vinz = %scan(&vinz_nms_grpd, &i, '~');
      %let vout = %scan(&vout_nms_grpd, &i,  '~');
      %array_stmnt2(&year, &_vgrp, &vout, &vinz);
@@ -141,7 +141,7 @@ quit;
 
 /* STEP0: ====initialize `_harmonized_out` data */
 proc sql noprint;
- select vgrp     into :vgrp_list  separated by " "  from _vgrps_info;
+ select vgrp     into :vgrp_list  separated by "~"  from _vgrps_info;
  select count(*) into :cnt_vgrps  from _vgrps_info;
  select count(*) into :cnt_vout from _vout_info;
  select vout_nm  into :vout_list  separated by " "  from _vout_info;
