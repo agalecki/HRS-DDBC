@@ -127,36 +127,29 @@ data _datain_skip_info(drop=skipit);
 run;
 
 
-data xprod_yr_by_vgrps;
+data xprod_yr_by_vgrps; /* Cartesian product of years by vgrp */
  set _datain_skip_info;
  label fcmp_member = "FCMP library member name";
  label vgrp  =  "Group variable name ";
  label ctype =  "Group variable type";
  label cnt_vin = "Number of input variables in a given vgrp";
  ;
- length vin_nms $ 2000;
+ length  vin_nms $ 2000;
+  length vinz_nms $ 2000;
  do i =1 to n;
   set _vgrps_info point=i nobs =n;
   vin_nms = dispatch_vin(year, vgrp);
-  cnt_vin = countw(vin_nms);
-  if cnt_vin = 0 then do;
-   if ctype ="$" then vin_nms = "_CHARZZZ_"; else vin_nms = "_ZZZ_"; /* Artificial vars */
+  vinz_nms = strip(vin_nms);
+  cnt_vinz = countw(vin_nms);
+  if cnt_vinz = 0 then do;
+   if ctype ="$" then vinz_nms = "_CHARZZZ_"; else vinz_nms = "_ZZZ_"; /* Artificial vars */
+   cnt_vinz = 1;
   end;
-  
   output;
  end;
- drop vout_nms cnt_vout;
+ drop cnt_vout;
 run;
 
-data _yr_by_vgrps_info;
-  set xprod_yr_by_vgrps;
-  if cnt_vin = 0 then delete;
-run;
-
-data _yr_by_vgrpszzz_info;
-  set xprod_yr_by_vgrps;
-  if cnt_vin = 0 then cnt_vin=1;
-run;
 
 /* Conditionally prints info datasets */ 
 %if &printit = Y %then  %print_project_info; 
@@ -181,17 +174,9 @@ Title "DATA ` _vout_info`: Harmonized variables";
 proc print data = _vout_info;
 run;
 
-*Title "Cartesian product: year by vgroup (auxiliary)";
-*proc print data = xprod_yr_by_vgrps;
-*run;
-
-Title "DATA: `_yr_by_vgrps_info`: Cartesian product: year by vgroup (cnt_vin = 0 omitted)";
-proc print data = _yr_by_vgrps_info;
+Title "Cartesian product: year by vgroup (`xprod_yr_by_vgrps`)";
+proc print data = xprod_yr_by_vgrps;
 run;
-
-Title "DATA: `_yr_by_vgrpszzz_info`: Cartesian product: year by vgroup (_ZZZ_ vars included)";
-proc print data = _yr_by_vgrpszzz_info;
-run; 
 
 title;
 %mend print_project_info;
