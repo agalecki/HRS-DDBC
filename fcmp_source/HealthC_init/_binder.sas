@@ -48,6 +48,7 @@ function dispatch_datain(studyyr) $ group ="binder";
    when(2000) dt ="h00b_r";
    otherwise  dt ="h"||yr2||"c_r";
  end;  
+ if studyyr_ok(studyyr) = 0 then dt = "";
 return(dt);
 endsub; /* function dispatch_datain */
 

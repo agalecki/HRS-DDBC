@@ -9,49 +9,10 @@ libname hrs_data "C:\Users\agalecki\Dropbox (University of Michigan)\DDBC HRS Pr
 %include "&test_fcmp_path/_global_test_mvars.inc"; /* global macro vars loaded */
 
 %include _tstmac(summ_fcmplib);
-%include _tstmac(array_stmnt2);
 %include _tstmac(_aux_mac);
 %include _tstmac(harmn_hrs);
 
 
-%macro harmonize_1year;
-
-data _year_outdata; 
-  set &hrs_datalib..&datain(keep = pn hhid &vin_nms_all);
-  missing O D R I N Z;
-  _CHARZZZ_= ""; /*  Artificial variable */
-  _ZZZ_ =.;
-  studyyr =&year;
-  
-   /*-- set initial values to missing ---*/
-   %do i=1 %to &cnt_vout; 
-     %let vnm = %scan(&vout_list, &i);   
-     %let ctype= %scan(&ctype_list, &i, ~);
-     %*put ctype := &;
-     &vnm =
-     %if &ctype =$ %then "?"; %else .Z;;
-   %end;    
-   %do i =1 %to &cnt_vgrps;
-     %let _vgrp = %scan(&vgrp_list, &i,'~'); 
-     %let vinz = %scan(&vinz_nms_grpd, &i, '~');
-     %let vout = %scan(&vout_nms_grpd, &i,  '~');
-     %array_stmnt2(&year, &_vgrp, &vout, &vinz);
-   %end;
- drop &vin_nms_all;
-  drop _CHARZZZ_ _ZZZ_;
-run;
-
-proc append base = _harmonized_base
-            data = _year_outdata;
-run;
-
-proc print data =  _harmonized_base;
-run;
-
-
-  
-
-%mend harmonize_1year;
 
 %macro harmonize_main_loop;
 %do iyear = 1 %to &cnt_hrsyears;
@@ -95,8 +56,8 @@ run;
  %put vin_nms_grpd            := &vin_nms_grpd; 
  %put vinz_nms_grpd           := &vinz_nms_grpd; /* Will be used to declare arrays of variables */
  %put vin_nms_all            := &vin_nms_all;
+ 
  %harmonize_1year;
-
 %end; /* Main loop: iyear */
 
 %mend harmonize_main_loop;
@@ -134,7 +95,6 @@ quit;
 %put fcmp_label           := &fcmp_label;
 %put Compiled on          := &fcmp_datestamp;
 
-
 /*-- Data: _datain_info,  ---*/
 %hrs_project_info(&fcmpmember, fcmplib = &fcmplib, hrsyears = &hrsyears, printit = N,
    vgrps = &vgrps);
@@ -162,6 +122,8 @@ quit;
 %put cnt_hrsyears  := &cnt_hrsyears;
 %harmonize_main_loop;
 
+/* --- Finish -----*/
+
 %mend IADL_function_test;
 
 %let fcmp_member = Function_5g;
@@ -170,55 +132,4 @@ libname lib1 "&_cmplib_path/&fcmp_member";
                     vgrps = ?);  /*iadl */
 ods html close;
 ENDSAS;
-
-
-%mend IADL_function_test;
-
-
-ods listing close;
-options nocenter;
-
-ods html;
-
-
-%let fcmp_member = Function_5g;
-libname cmplib1 "&_cmplib_path/&fcmp_member";
-%IADL_function_test(1992-2000, hrs_datalib = hrs_data, cmplib = cmplib1, member = &member);
-ods html close;
--- ENDSAS;
-
-
-/* --- function_5g ----*/
-%let hrs_fcmp = function_5g;
-options cmplib=_cmplib.&hrs_fcmp; 
-/* subhh$ adldiff adlhlp iadldiff iadl */
-%harmonize_1cmpyr(1995, outdata = _95); 
-
-%harmonize_1cmpyr(1996,  outdata = _96); 
-proc print data =_96(obs=30);
-run;
-
-%harmonize_1cmpyr(2000,  outdata = _00); 
-proc print data =_00(obs=30);
-run;
-
-%*harmonize_1cmpyr(1995);
-
-
-endsas;
-
-/* --- test7_DLFunction ----*/
-%let hrs_fcmp = test7_DLFunction;
-options cmplib=_cmplib.&hrs_fcmp; 
-/* subhh$ skip adldiff adlhlp equip iadldiff iadlhlp why */
- %harmonize_1cmpyr(1992, ?, outdt = _92all); 
- %harmonize_1cmpyr(1993, ?, outdt = _93all); 
-
-/* --- DLFUNCTION ----*/
-%let hrs_fcmp = dlfunction;
-options cmplib=_cmplib.&hrs_fcmp; 
-/* subhh$ skip adldiff adlhlp equip iadldiff iadlhlp why */
-%harmonize_1cmpyr(1995, ?, outdt = _95all); 
-
-endsas;
 

@@ -36,15 +36,16 @@ function dispatch_datain(studyyr) $ group ="binder";
  yr2  = substr(yearc,3,2);
 
  select(studyyr);
-   when(1992, 1993, 1994) dt = "";  /* ?? */
+   when(1992, 1993, 1994) dt = "";  /* ??!!! */
    when(1995) dt ="a95e_r";
    when(1996) dt ="h96e_r";
    when(1998) dt ="h98e_r";
    when(2000) dt ="h00e_r";
    otherwise  dt ="h"||yr2||"g_r";
- end;  
-return(dt);
-endsub; /* function dispatch_datain */
+ end; 
+ if studyyr_ok(studyyr) = 0 then dt = ""; 
+return(dt); /* function dispatch_datain */
+endsub; 
 
 function dispatch_vout(vgrp $) $ group ="binder";
 /* Based on `vgrp` returns list of output variables */
