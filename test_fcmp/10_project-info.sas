@@ -22,10 +22,10 @@ options nocenter mprint nodate;
 %*let fmember = healthC_init;
 
 ods html file = "&test_fcmp_path/10_project-info.html";
-%hrs_binder();
-%hrs_binder (cmplib= _ucmplib);
-%hrs_binder (cmplib= _ucmplib, member = &fmember);
-%hrs_binder (cmplib= _ucmplib, member = &fmember, hrs_years = 1992-2032);
+%*hrs_binder();                 /* hrs_binder macro parameters*/
+%*hrs_binder (cmplib= _ucmplib); /* cmplib info */
+%*hrs_binder (cmplib= _ucmplib, member = &fmember);  /* FCMP member info */
+%****hrs_binder (cmplib= _ucmplib, member = &fmember, hrs_years = 1992-2032); /* project_info */
 %hrs_binder (cmplib= _ucmplib, member = &fmember, hrs_years = 1992-2032, hrs_libin = hrs_data);
 
 ods html close;

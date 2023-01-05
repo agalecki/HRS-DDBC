@@ -1,5 +1,5 @@
 %macro hrs_binder_arguments;
-Title "HRS_BINDER macro arguments. (Version: 3JAN2023)";
+Title "HRS_BINDER macro arguments. (Version: 3JAN2023)"; /* update, if needed */
 data hrs_binder_arguments;
 length name $32;
 length desc $250;
@@ -30,7 +30,7 @@ ods exclude none;
 quit;
 *ods trace off;
 
-title "FCMP members in `&cmplib info` library (&sysdate)"; 
+title "FCMP members in `&cmplib` info library (&sysdate)"; 
 proc print data = _cmplib_members;
 run;
 

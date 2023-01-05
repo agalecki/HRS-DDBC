@@ -7,7 +7,7 @@
    hrs_datalib =,           /* If provided then checked whether library exist */
    vgrps = ?,               /* Variable groups. Ex: <subhh$ healthrate cancer>. 
                                See `bind_vgrps()`. By default ? all vgrps included */
-   out = work.hrs_project_definition,  /* SAS dataset with project definition */ 
+   out =,
    printit = Y,
  );
 
@@ -172,7 +172,7 @@ run;
 /* Conditionally prints info datasets */ 
 %if &printit = Y %then  %print_project_info; 
 
-%*if %isblank(&hrs_datalib) =0 %then %harmonized_init;
+%if %isblank(&out) = 1 %then %harmonized_init;
 %mend hrs_project_info;
 
 %macro print_project_info;

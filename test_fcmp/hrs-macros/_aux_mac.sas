@@ -40,3 +40,26 @@ _version   = fcmp_member_info("version_date");
 _datestamp = fcmp_member_info("datestamp");
 run;
 %mend  fcmp_member_datainfo;
+
+%macro _contents_vars(data, printit = Y);
+/* creates `_contents_vars` dataset */
+
+*ods trace on;
+ods exclude all;
+ods output variables =_contents_vars;
+proc contents data= &data position; run;
+run;
+quit;
+ods output close;
+ods exclude none;
+*ods trace off;
+proc sort data=_contents_vars;
+by num;
+run;
+
+%if &printit =Y %then %do;
+ proc print data= _contents_vars(drop=num);
+ run;
+%end;
+%mend _contents_vars;
+
