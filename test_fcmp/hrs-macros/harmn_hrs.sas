@@ -47,7 +47,7 @@ data _harmonized_base (label ="&fcmp_label.. FCMP member `&fcmp_member` compiled
   stop;
 ;
 run;
-* proc contents data= _harmonized_base position; run;
+proc contents data= _harmonized_base position; run;
 %mend harmonized_init;
 
 %macro array_stmnt2(year, _vgrp, vout, vin);
@@ -175,12 +175,12 @@ run;
          hrsyears=, 
          hrs_datalib=,
          vgrps = ?,
-         out =);
+         out =);  /* Data out with harmonized variables */
 /* Load FCMP library FCMP member */                          
 options cmplib = &fcmplib..&fcmpmember;
 
 /* --- Use `hrs_project_info` function to extract project info from cmplib */
-%fcmp_member_datainfo; /* Data with _label, _member, _version, _datestamp vars created*/
+%fcmp_member_datainfo; /* one row data with _label, _member, _version, _datestamp vars created*/
 *proc print data = fcmp_member_datainfo; run;
 
 %local fcmp_label fcmp_version fcmp_datestamp fcmp_member;
@@ -201,11 +201,11 @@ quit;
 %put fcmp_label           := &fcmp_label;
 %put Compiled on          := &fcmp_datestamp;
 
-/*-- Data: _datain_info,  ---*/
+/*-- Data: Multiple dataests with project info created  ---*/
 %hrs_project_info( fcmplib = &fcmplib, fcmpmember=&fcmp_member,hrsyears = &hrsyears, printit = N,
-   vgrps = &vgrps, hrs_datalib = &hrs_datalib, out =);
+   vgrps = &vgrps, hrs_datalib = &hrs_datalib);
 
-/* STEP0: ====initialize `_harmonized_out` data */
+/* STEP0: ====initialize `_harmonized_base` data */
 proc sql noprint;
  select vgrp     into :vgrp_list  separated by "~"  from _vgrps_info;
  select count(*) into :cnt_vgrps  from _vgrps_info;

@@ -98,9 +98,7 @@ title "";
     %let ex3 =N;
     %let ex4 =N;
     %let ex5 =Y; /* ex5 dataout*/
-  %end;
-   
-  
+  %end;  
  
 /* Conditionaly execute macros */
 %put ex0 :=&ex0, ex1 := &ex1, ex2 := &ex2, ex3 := &ex3, ex4= &ex4, ex5 := &ex5;
@@ -111,5 +109,7 @@ title "";
                                        hrsyears =&hrs_years,vgrps=&vgrps, printit = Y); 
 %if &ex4 = Y %then %hrs_project_info(fcmplib =&cmplib, fcmpmember=&member, hrsyears =&hrs_years,
                         vgrps=&vgrps, hrs_datalib =&hrs_libin, printit = Y);
+%if &ex5 = Y %then %hrs_main_macro(fcmplib =&cmplib, fcmpmember=&member, hrsyears =&hrs_years,
+                        vgrps=&vgrps, hrs_datalib =&hrs_libin, out =&dataout);
 
 %mend hrs_binder;

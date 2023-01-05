@@ -7,7 +7,7 @@ libname hrs_data "C:\Users\agalecki\Dropbox (University of Michigan)\DDBC HRS Pr
 %put _cmplib_path := &_cmplib_path;
 
 %include "&test_fcmp_path/_global_test_mvars.inc"; /* global macro vars loaded */
-%include _tstmac(_aux_mac summ_fcmplib summ_project binder_info); /* Macros loaded */
+%include _tstmac(_aux_mac summ_fcmplib summ_project binder_info harmn_hrs); /* Macros loaded */
 
 /* Auxiliary dataset that contains `year` variable (one row per selected year */ 
 
@@ -21,7 +21,7 @@ options nocenter mprint nodate;
 %let fmember = test7_DLFunction;
 %*let fmember = healthC_init;
 
-ods html file = "&test_fcmp_path/10-fcmplib-info.html";
+ods html file = "&test_fcmp_path/10_project-info.html";
 %hrs_binder();
 %hrs_binder (cmplib= _ucmplib);
 %hrs_binder (cmplib= _ucmplib, member = &fmember);

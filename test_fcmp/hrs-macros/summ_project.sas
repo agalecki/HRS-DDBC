@@ -172,6 +172,7 @@ run;
 /* Conditionally prints info datasets */ 
 %if &printit = Y %then  %print_project_info; 
 
+%*if %isblank(&hrs_datalib) =0 %then %harmonized_init;
 %mend hrs_project_info;
 
 %macro print_project_info;

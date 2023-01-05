@@ -11,19 +11,14 @@ libname lib ".";
 %include _tstmac(summ_project);
 %include _tstmac(_aux_mac);
 %include _tstmac(harmn_hrs);
-%*include _tstmac(summ_fcmplib binder_info); /* Macros loaded */
-
-
-
+%include _tstmac(summ_fcmplib binder_info); /* Macros loaded */
 
 %let fcmp_member = Function_5g;
-%hrs_main_macro(
-        fcmplib      =_ucmplib,           /* FCMP libref (fcmplib) */ 
-	fcmpmember   = &fcmp_member,
-        hrsyears     = 1992-2000,       /* HRS years */
-        hrs_datalib = hrs_data,       /* libref to hrs data library (hrs_datalib)*/
-        vgrps = ?,
-        out = lib.hrs_out); 
-*ods html close;
-ENDSAS;
+
+ods html file = "&test_fcmp_path/30-test3.html";
+%hrs_binder (cmplib= _ucmplib, member = &fcmp_member, 
+             hrs_years = 1992-2032, hrs_libin = hrs_data, dataout=lib.hrs_out);
+ods html close;
+
+
 
