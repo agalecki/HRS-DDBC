@@ -2,7 +2,7 @@
 
 filename _src "../fcmp_source/&cmplib_name";
 proc fcmp outlib = work.fun.test;
-%include _src(_common);
+%*include _src(_common);
 %include _src(subhh_grp);
 %include _src(_auxiliary);
 %include _src(_binder);
@@ -10,6 +10,11 @@ proc fcmp outlib = work.fun.test;
 %include _src(adlhlp_grp);
 %include _src(iadl_grp);
 %include _src(iadldiff_grp);
+function data_exist(ref $) group = "aux";
+ rc = exist(ref);
+ if (ref = "") then rc=0;
+ return(rc);
+endsub;
 
 run;
 quit;
@@ -19,6 +24,17 @@ quit;
 options cmplib = work.fun;
 
 data dt;
+x=1;
+run;
+
+data _null_;
+  res = data_exist("   ");
+  put res=;
+run;
+endsas;
+
+  
+  
   vgrpz = vgrp_name3("subhh$1");
  
   vgrps  = bind_vgrps("?");

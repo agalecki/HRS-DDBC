@@ -1,7 +1,14 @@
 /* Create global macro vars */
-/* Code below requires _cmplib path and cdir_path macro vars */    
+/* Code below requires _cmplib path and cdir_path macro vars */ 
 
-libname _cmplib "&_cmplib_path"   FILELOCKWAIT=60;
+/* Concatenate FCMP libraries into `_ucmplib` */ 
+libname ucmp1 "&_cmplib_path\Function_5g";
+libname ucmp2 "&_cmplib_path\test7_DLFunction";
+libname ucmp3 "&_cmplib_path\healthC_init";
+
+libname _ucmplib (ucmp1 ucmp2 ucmp3);  
+
+
 
 
 filename _tstmac "&test_fcmp_path\hrs-macros";

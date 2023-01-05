@@ -57,4 +57,9 @@ function FQ_fun(studyyr, var_old) group ="aux";
   return(ok); /* function studyyr_ok */
  endsub; 
 
+function data_exist(ref $) group = "aux";
+ rc = exist(ref);
+ if (ref = "") then rc=0;
+ return(rc);
+endsub;
 

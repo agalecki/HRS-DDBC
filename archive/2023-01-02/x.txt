@@ -1,0 +1,163 @@
+%macro define_hrs_projectx(
+   fcmplib,                 /* FCMP library */
+   fcmpmember,              /* FCMP lib member: */
+   hrsyears = 1992-2030,    /* <1992 1994-2000, 2018> */ 
+   hrs_datalib =,           /* If provided then checked whether library exist */
+   vgrps = ?,               /* Variable groups. Ex: <subhh$ healthrate cancer>. 
+                               See `bind_vgrps()`. By default ? all vgrps included */
+   out = work.hrs_project_definition,  /* SAS dataset with project definition */ 
+   printit = Y,
+ );
+ 
+ 
+/* Dataset `hrs_project_info` with arguments info created */
+
+data macro_arguments_info;
+length arg_name   $ 32;
+length arg_desc   $ 250;
+length arg_type   $ 1;
+length default    $ 250;
+length arg_value  $ 250;
+length exist    $50;
+length tmpc $50;
+
+arg_name  = "fcmplib";
+arg_desc  = "FCMP library (mandatory)";
+arg_type = "";   /* Positional parameter*/
+default  = "";
+arg_value = "&fcmplib"; 
+
+select(arg_value);
+  when("") exist = "fcmplib argument cannot be blank ... ???";
+  otherwise 
+      do;
+       tmp   = libref(arg_value);
+        if tmp = 0 then exist = strip(arg_value) || " library exists  ... OK";
+          else  exist = strip(arg_value) || " DOES NOT exist  ... ???";
+      end;
+end;
+output;
+
+arg_name  = "fcmpmember";
+arg_desc  = "FCMP lib member (mandatory)";
+arg_type  = "";   /* Positional parameter*/
+default   = "";
+arg_value = "&fcmpmember"; 
+select(arg_value);
+  when("") exist = "`fcmpmember` argument cannot be blank ... ???";
+  otherwise 
+      do;
+       tmpc = strip("&fcmplib") ||"."||strip(arg_value);
+       tmp   = exist(tmpc);
+       if strip(arg_value) ="" then tmp=0;
+        if tmp = 1 then exist = strip(arg_value) ||" fcmp member exists  ... OK";
+          else  exist = strip(arg_value) || " fcmp member DOES NOT exist  ... ???";
+      end;
+end;
+output;
+
+arg_name  = "hrs_datalib";
+arg_desc  = "SAS library with HRS data";
+arg_type  = "=";   /* Named parameter */
+default   = "";
+arg_value = "&hrs_datalib"; 
+select(arg_value);
+  when("") exist = "`hrs_datalib` argument is blank, library was not checked for existence ... OK";
+  otherwise 
+      do;
+       tmp   = libref(arg_value);
+        if tmp = 0 then exist = strip(arg_value) || " library exists  ... OK";
+          else  exist = strip(arg_value) || " library DOES NOT exist  ... ???";
+      end;
+end;
+output;
+
+arg_name  = "hrsyears";
+arg_desc  = "HRS years: Ex. 1992 1994-2000, 2018";
+arg_type  =  "=";  /* Named parameter */
+default   = "1992-2030";
+arg_value = "&hrsyears";
+exist     = "--- Not applicable   ... OK";
+output;
+
+arg_name  = "vgrps";
+arg_desc  = "Var groups. Ex: <subhh$ healthrate cancer>. <?> stands for all groups listed in ``bind_vgrps()` function";
+arg_type  =  "=";  /* Named parameter */
+default   = "?";
+arg_value = "&vgrps";
+exist     = "--- Not applicable   ... OK";
+
+output;
+
+arg_name  = "printit";
+arg_desc  = "Use proc print Y/N";
+arg_type  =  "=";  /* Named parameter */
+default   = "Y";
+arg_value = "&printit";
+exist     = "--- Not applicable   ... OK";
+output;
+
+arg_name  = "out";
+arg_desc  = "SAS dataset ";
+arg_type  = "=";   /* Named parameter */
+default   = "";
+arg_value = "&out"; 
+select(arg_value);
+  when("") exist = "`outlib` argument is blank, check not done ... OK";
+  otherwise 
+      do;
+       tmp   = libref(arg_value);
+        if tmp = 0 then exist = strip(arg_value) || "library exists  ... OK";
+          else  exist = strip(arg_value) || " library DOES NOT exist  ... ???";
+      end;
+end;
+
+output;
+drop tmp tmpc;
+run;
+
+Title "Macro arguments assigned by invoking `hrs_project_info` macro";
+proc print data =macro_arguments_info;
+run;
+
+/* Select member in fcmp cmplib library */ 
+options cmplib = &fcmplib..&fcmpmember;
+
+data check_arg_values;
+ set macro_arguments_info(keep = arg_name arg_value);
+ length cmnt $250;
+ length tmp1c tmp2c $200;
+ cmnt = "";
+ select(arg_name);
+  when("fcmplib") if arg_value ne "" then cmnt = pathname(arg_value);
+  when("fcmpmember")
+       do; 
+        cmnt  = "FCMP member names  match ... OK";
+        tmp1c = strip(lowcase (fcmp_member_info("fcmp_member")));
+        tmp2c = strip(lowcase ("&fcmpmember"));
+        if tmp1c ne tmp2c then cmnt = "FCMP member name "|| strip (tmp1c) || " in fcmp_member_info() function is misspelled ...???.";
+       end;
+  when("hrs_datalib") if arg_value ne "" then cmnt = pathname(arg_value);
+  when("vgrps") 
+    if arg_value = "?" then cmnt = "All var groups: "||strip(bind_vgrps("?"));
+
+  when("printit") 
+      if arg_value = "Y" then cmnt = "Datasets with project info will be printed ... Ok";
+       else cmnt = "Datasets with project info will NOT be printed";
+  otherwise;
+ end;
+  drop tmp1c tmp2c;  
+ run;
+ Title "Comments on assigned values of `define_hrs_project` macro arguments";
+ proc print data=check_arg_values;
+ run;
+
+ /* Copy `check_arg_values` datsset */
+%if &out ne %then %do;
+  data &out;
+   set check_arg_values;
+   run;
+%end;
+ 
+%mend define_hrs_project;
+
